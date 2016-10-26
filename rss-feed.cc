@@ -23,18 +23,20 @@
 using namespace std;
 
 static const int XML_PARSE_FLAGS = XML_PARSE_NOBLANKS | XML_PARSE_NOERROR | XML_PARSE_NOWARNING;
-string trim(string& str);
+string trim(string &str);
 
-string trim(string& str)
+string trim(string &str)
 {
-    size_t first = str.find_first_not_of(' ');
-    size_t last = str.find_last_not_of(' ');
-    return str.substr(first, (last-first+1));
+  size_t first = str.find_first_not_of(' ');
+  size_t last = str.find_last_not_of(' ');
+  return str.substr(first, (last - first + 1));
 }
 
-void RSSFeed::parse() {
+void RSSFeed::parse()
+{
   xmlDocPtr doc = xmlReadFile(url.c_str(), /* encoding = */ NULL, XML_PARSE_FLAGS);
-  if (doc == NULL) {
+  if (doc == NULL)
+  {
     // This is the only real user error we handle with any frequency, as it's
     // completely reasonable that the client more than occasionally specify a bogus URL.
     basic_ostringstream<char> oss;
@@ -47,22 +49,23 @@ void RSSFeed::parse() {
   xmlXPathObjectPtr items = xmlXPathEvalExpression(expr, context);
   xmlNodeSetPtr itemNodes = items->nodesetval;
   int numItems = itemNodes != NULL ? itemNodes->nodeNr : 0;
-  for (int i = 0; i < numItems; i++) {
+  for (int i = 0; i < numItems; i++)
+  {
     Article a;
     context->node = itemNodes->nodeTab[i];
     const xmlChar *titleSubExpr = BAD_CAST "title";
     xmlXPathObjectPtr titles = xmlXPathEvalExpression(titleSubExpr, context);
     xmlChar *title =
-      (titles->nodesetval == NULL || titles->nodesetval->nodeNr == 0) ? xmlCharStrdup("") : xmlNodeGetContent(titles->nodesetval->nodeTab[0]);
-    a.title = (const char *) title;
+        (titles->nodesetval == NULL || titles->nodesetval->nodeNr == 0) ? xmlCharStrdup("") : xmlNodeGetContent(titles->nodesetval->nodeTab[0]);
+    a.title = (const char *)title;
     trim(a.title);
     xmlFree(title);
     xmlXPathFreeObject(titles);
     const xmlChar *linkSubExpr = BAD_CAST "link";
     xmlXPathObjectPtr links = xmlXPathEvalExpression(linkSubExpr, context);
     xmlChar *link =
-      (links->nodesetval == NULL || links->nodesetval->nodeNr == 0) ? xmlCharStrdup("") : xmlNodeGetContent(links->nodesetval->nodeTab[0]);
-    a.url = (const char *) link;
+        (links->nodesetval == NULL || links->nodesetval->nodeNr == 0) ? xmlCharStrdup("") : xmlNodeGetContent(links->nodesetval->nodeTab[0]);
+    a.url = (const char *)link;
     trim(a.url);
     xmlFree(link);
     xmlXPathFreeObject(links);

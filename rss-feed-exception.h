@@ -10,12 +10,13 @@
 #include <exception>
 #include <string>
 
-class RSSFeedException: public std::exception {
- public: 
-  RSSFeedException(const std::string& message) throw() : message(message) {}
+class RSSFeedException : public std::exception
+{
+public:
+  RSSFeedException(const std::string &message) throw() : message(message) {}
   ~RSSFeedException() throw() {}
   const char *what() const throw() { return message.c_str(); }
-  
- private:
+
+private:
   const std::string message;
 };

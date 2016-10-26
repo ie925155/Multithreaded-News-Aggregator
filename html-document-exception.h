@@ -10,12 +10,13 @@
 #include <exception>
 #include <string>
 
-class HTMLDocumentException: public std::exception {
- public: 
-  HTMLDocumentException(const std::string& message) throw() : message(message) {}
+class HTMLDocumentException : public std::exception
+{
+public:
+  HTMLDocumentException(const std::string &message) throw() : message(message) {}
   ~HTMLDocumentException() throw() {}
   const char *what() const throw() { return message.c_str(); }
-  
- private:
+
+private:
   const std::string message;
 };

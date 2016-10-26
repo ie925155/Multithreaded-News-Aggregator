@@ -27,19 +27,19 @@
 #include <string>
 #include <map>
 
-class RSSFeedList {
- public:
-
-/**
+class RSSFeedList
+{
+public:
+  /**
  * Constructor: RSSFeedList
  * Usage: RSSFeedList rssFeedList("large-feed.xml");
  * -------------------------------------------------
  * Constructs an RSSFeedList around the provided URL (which may be
  * a local file).
  */
-  RSSFeedList(const std::string& url) : url(url) {}
+  RSSFeedList(const std::string &url) : url(url) {}
 
-/**
+  /**
  * Method: parse
  * Usage: list.parse();
  * --------------------
@@ -49,7 +49,7 @@ class RSSFeedList {
  */
   void parse();
 
-/**
+  /**
  * Method: getFeeds
  * Usage: auto feeds = list.getFeeds();
  * ------------------------------------
@@ -57,19 +57,19 @@ class RSSFeedList {
  * Titles are strings like "World News: The Washington Post" and URLs are like
  * "http://feeds.washingtonpost.com/rss/world".
  */
-  const std::map<std::string, std::string>& getFeeds() const { return feeds; }
-  
- private:
+  const std::map<std::string, std::string> &getFeeds() const { return feeds; }
+
+private:
   std::string url;
   std::map<std::string, std::string> feeds;
 
-/**
+  /**
  * The following two lines delete the default implementations you'd
  * otherwise get for the copy constructor and operator=.  Because the implementation
  * of parse() involves networking code, it's not clear what the semantics of a
  * deep copy really should be.  By deleting these two items, we force all clients
  * of the RSSFeedList class to pass instances around by reference or by address.
  */
-  RSSFeedList(const RSSFeedList& other) = delete;
-  void operator=(const RSSFeedList& rhs) = delete;
+  RSSFeedList(const RSSFeedList &other) = delete;
+  void operator=(const RSSFeedList &rhs) = delete;
 };

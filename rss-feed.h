@@ -11,18 +11,18 @@
 #include <vector>
 #include "article.h"
 
-class RSSFeed {
- public:
-
-/**
+class RSSFeed
+{
+public:
+  /**
  * Constructor: RSSFeed
  * Usage: RSSFeed feed("http://feeds.washingtonpost.com/news/world.rss");
  * ----------------------------------------------------------------------
  * Constructs an RSSFeed object around the provided URL.
  */
-  RSSFeed(const std::string& url) : url(url) {}
+  RSSFeed(const std::string &url) : url(url) {}
 
-/**
+  /**
  * Method: parse
  * Usage: feed.parse();
  * --------------------
@@ -31,16 +31,16 @@ class RSSFeed {
  */
   void parse();
 
-/**
+  /**
  * Method: getArticles
  * Usage: const vector<Article>& articles = feed.getArticles();
  * ------------------------------------------------------------
  * Returns a const reference to the sequence of Articles embedded
  * within the already-parsed-and-processed RSSFeed object.
  */
-  const std::vector<Article>& getArticles() const { return articles; }
-  
- private:
+  const std::vector<Article> &getArticles() const { return articles; }
+
+private:
   std::string url;
   std::vector<Article> articles;
 
@@ -51,6 +51,6 @@ class RSSFeed {
    * deep copy really should be.  By deleting these two items, we force all clients
    * of the RSSFeed class to pass instances around by reference or by addresses.
    */
-  RSSFeed(const RSSFeed& other) = delete;
-  void operator=(const RSSFeed& rhs) = delete;
+  RSSFeed(const RSSFeed &other) = delete;
+  void operator=(const RSSFeed &rhs) = delete;
 };
