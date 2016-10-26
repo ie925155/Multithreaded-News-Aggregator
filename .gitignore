@@ -1,3 +1,6 @@
+news-aggregator
+thread-pool-test
+html-test
 *.o
 .tags
 *.dependencies
