@@ -2,16 +2,32 @@
 <rss version="2.0">
   <channel>
     <item>
-      <title>World: World News, International News, Foreign Reporting - The Washington Post</title>
-      <link>http://feeds.washingtonpost.com/rss/world</link>
-    </item>
-    <item>
       <title>Los Angeles Times - Top News</title>
       <link>http://feeds.latimes.com/latimes/news</link>
     </item>
     <item>
-      <title>Nation &amp; World - chicagotribune.com</title>
-      <link>http://feeds.chicagotribune.com/chicagotribune/news/nationworld</link>
+      <title>BBC Future - http://www.bbc.com/news</title>
+      <link>http://www.bbc.com/future/feed.rss</link>
+    </item>
+    <item>
+      <title>BBC Science - http://www.bbc.com/news</title>
+      <link>http://www.bbc.com/future/feed.rss</link>
+    </item>
+    <item>
+      <title>BBC Future - http://www.bbc.com/news</title>
+      <link>http://www.bbc.com/future/feed.rss</link>
+    </item>
+    <item>
+      <title>BBC technology news - http://www.bbc.com/news</title>
+      <link>http://feeds.bbci.co.uk/news/technology/rss.xml</link>
+    </item>
+    <item>
+      <title>CNN News - http://www.cnn.com</title>
+      <link>http://rss.cnn.com/rss/edition_world.rss</link>
+    </item>
+    <item>
+      <title>Chron News -http://www.chron.com</title>
+      <link>http://www.chron.com/rss/feed/News-270.php</link>
     </item>
   </channel>
 </rss>

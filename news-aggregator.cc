@@ -100,19 +100,23 @@ static void processAllFeeds(const string &feedListURI)
     exit(kBogusRSSFeedListName);
   }
 
-  for (int i = 0; i < feedList.getFeeds().size(); i++)
+  map<std::string, std::string> feedsmap = feedList.getFeeds();
+  for (map<string, string>::iterator it = feedsmap.begin(); it != feedsmap.end(); ++it)
   {
-    printf("test");
+    cout << it->first << " => " << it->second << '\n';
+    RSSFeed feed(it->first);
+    feed.parse();
+    vector<Article> articleVector = feed.getArticles();
+    for (vector<Article>::iterator it = articleVector.begin(); it != articleVector.end(); ++it)
+    {
+      cout << "url=" << it->url << endl;
+      cout << " title=" << it->title << endl;
+      struct Article article = {it->url, it->title};
+      HTMLDocument document(it->url);
+      document.parse();
+      index.add(article, document.getTokens());
+    }
   }
-
-  HTMLDocument document("http://www.facebook.com/jerry");
-  // note to student
-  // ---------------
-  // add well-decomposed code to read all of the RSS
-  // news feeds from feedList for their news articles,
-  // and for each news article URL, process it
-  // as an HTMLDocument and add all of the tokens
-  // to the master RSSIndex.
 }
 
 static const size_t kMaxMatchesToShow = 15;
