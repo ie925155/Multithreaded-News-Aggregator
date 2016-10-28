@@ -36,6 +36,10 @@ SOURCES = \
 	rss-feed-list.cc \
 	html-document.cc \
 	rss-index.cc \
+	html-test.cc \
+	thread-pool.cc \
+	thread-pool-test.cc \
+	ostreamlock.cc \
 
 HEADERS = \
 	article.h \
@@ -48,6 +52,8 @@ HEADERS = \
 	html-document.h \
 	html-document-exception.h \
 	rss-index.h \
+	thread-pool.h \
+	ostreamlock.h \
 
 OBJECTS = $(SOURCES:.cc=.o)
 TARGETS = news-aggregator
