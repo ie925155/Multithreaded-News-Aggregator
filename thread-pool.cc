@@ -48,6 +48,6 @@ void ThreadPool::wait()
   this->stop = true;
   lock.unlock();
   task_condition.notify_all();
-  for(thread &worker: workers)
+  for(auto &worker: workers)
     worker.join();
 }

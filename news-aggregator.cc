@@ -25,14 +25,18 @@
 #include "rss-feed-exception.h"
 #include "rss-feed-list-exception.h"
 #include "news-aggregator-utils.h"
-//#include "string-utils.h"
+#include "thread-pool.h"
+#include "ostreamlock.h"
+
 using namespace std;
 
 // globals
 static bool verbose = false;
 static RSSIndex index;
+mutex m;
 
 static const int kIncorrectUsage = 1;
+static const size_t kNumThreads = 24;
 
 extern string trim(string &str);
 
@@ -101,21 +105,32 @@ static void processAllFeeds(const string &feedListURI)
   }
 
   map<std::string, std::string> feedsmap = feedList.getFeeds();
+  //handle all feeds
   for (map<string, string>::iterator it = feedsmap.begin(); it != feedsmap.end(); ++it)
   {
     cout << it->first << " => " << it->second << '\n';
     RSSFeed feed(it->first);
     feed.parse();
     vector<Article> articleVector = feed.getArticles();
-    for (vector<Article>::iterator it = articleVector.begin(); it != articleVector.end(); ++it)
-    {
-      cout << "url=" << it->url << endl;
-      cout << " title=" << it->title << endl;
-      struct Article article = {it->url, it->title};
-      HTMLDocument document(it->url);
-      document.parse();
-      index.add(article, document.getTokens());
-    }
+    ThreadPool pool(kNumThreads);
+    //handle articles of feed
+    for_each(begin(articleVector), end(articleVector), [&pool](Article a) {
+      //cout << "url=" << a.url << endl;
+      //cout << " title=" << a.title << endl;
+      pool.schedule([a]{
+          cout << oslock << "Parse article \"" <<  a.url << "\" has started." << endl
+               << osunlock;
+          struct Article article = {a.url, a.title};
+          HTMLDocument document(a.url);
+          document.parse();
+          m.lock();
+          index.add(article, document.getTokens());
+          m.unlock();
+          cout << oslock << "Parse article \"" <<  a.url << "\" ended." << endl
+               << osunlock;
+      });
+     });
+    pool.wait();
   }
 }
 
