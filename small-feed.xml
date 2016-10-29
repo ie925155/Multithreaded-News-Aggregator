@@ -6,20 +6,16 @@
       <link>http://feeds.latimes.com/latimes/news</link>
     </item>
     <item>
-      <title>BBC Future - http://www.bbc.com/news</title>
-      <link>http://www.bbc.com/future/feed.rss</link>
+      <title>Chron Technology -http://www.chron.com</title>
+      <link>http://www.chron.com/rss/feed/Technology-289.php</link>
     </item>
     <item>
-      <title>BBC Science - http://www.bbc.com/news</title>
-      <link>http://www.bbc.com/future/feed.rss</link>
+      <title>WSJ Technology - http://www.wsj.com/asia</title>
+      <link>http://www.wsj.com/xml/rss/3_7455.xml</link>
     </item>
     <item>
-      <title>BBC Future - http://www.bbc.com/news</title>
-      <link>http://www.bbc.com/future/feed.rss</link>
-    </item>
-    <item>
-      <title>BBC technology news - http://www.bbc.com/news</title>
-      <link>http://feeds.bbci.co.uk/news/technology/rss.xml</link>
+      <title>NEW YORK POSTS All Posts - http://nypost.com</title>
+      <link>http://nypost.com/feed/</link>
     </item>
     <item>
       <title>CNN News - http://www.cnn.com</title>
