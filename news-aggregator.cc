@@ -36,6 +36,7 @@ static RSSIndex index;
 mutex m;
 
 static const int kIncorrectUsage = 1;
+static const size_t mNumThreads = 6;
 static const size_t kNumThreads = 24;
 
 extern string trim(string &str);
@@ -105,38 +106,36 @@ static void processAllFeeds(const string &feedListURI)
   }
 
   map<string, string> feedsmap = feedList.getFeeds();
+  ThreadPool feed_pool(mNumThreads);
   //handle all feeds
-  for_each(feedsmap.begin(), feedsmap.end(), [](const pair<string, string>& it) {
+  for_each(feedsmap.begin(), feedsmap.end(), [&feed_pool](const pair<string, string>& it) {
     cout << it.first << " => " << it.second << '\n';
-    RSSFeed feed(it.first);
-    feed.parse();
-    vector<Article> articleVector = feed.getArticles();
-    ThreadPool pool(kNumThreads);
-    //handle articles of feed
-    for_each(begin(articleVector), end(articleVector), [&pool](Article a) {
-      //cout << "url=" << a.url << endl;
-      //cout << " title=" << a.title << endl;
-      pool.schedule([a]{
-          cout << oslock << "Parse article \"" <<  a.url << "\" has started." << endl
-               << osunlock;
-          struct Article article = {a.url, a.title};
-          HTMLDocument document(a.url);
-          document.parse();
-          m.lock();
-          index.add(article, document.getTokens());
-          m.unlock();
-          cout << oslock << "Parse article \"" <<  a.url << "\" ended." << endl
-               << osunlock;
+    feed_pool.schedule([it]{
+      RSSFeed feed(it.first);
+      feed.parse();
+      vector<Article> articleVector = feed.getArticles();
+      ThreadPool pool(kNumThreads);
+      //handle articles of feed
+      for_each(articleVector.begin(), articleVector.end(), [&pool](Article a) {
+        //cout << "url=" << a.url << endl;
+        //cout << " title=" << a.title << endl;
+        pool.schedule([a]{
+            cout << oslock << "Parse article \"" <<  a.url << "\" has started." << endl
+                 << osunlock;
+            struct Article article = {a.url, a.title};
+            HTMLDocument document(a.url);
+            document.parse();
+            m.lock();
+            index.add(cref(article), cref(document.getTokens()));
+            m.unlock();
+            cout << oslock << "Parse article \"" <<  a.url << "\" ended." << endl
+                 << osunlock;
+        });
       });
-    });
-    pool.wait();
+      pool.wait();
+    }); // end of feed_pool lambda
   });
-  #if 0
-  for (map<string, string>::iterator it = feedsmap.begin(); it != feedsmap.end(); ++it)
-  {
-    //cout << it->first << " => " << it->second << '\n';
-  }
-  #endif
+  feed_pool.wait();
 }
 
 static const size_t kMaxMatchesToShow = 15;
