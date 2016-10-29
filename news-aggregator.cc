@@ -104,12 +104,11 @@ static void processAllFeeds(const string &feedListURI)
     exit(kBogusRSSFeedListName);
   }
 
-  map<std::string, std::string> feedsmap = feedList.getFeeds();
+  map<string, string> feedsmap = feedList.getFeeds();
   //handle all feeds
-  for (map<string, string>::iterator it = feedsmap.begin(); it != feedsmap.end(); ++it)
-  {
-    cout << it->first << " => " << it->second << '\n';
-    RSSFeed feed(it->first);
+  for_each(feedsmap.begin(), feedsmap.end(), [](const pair<string, string>& it) {
+    cout << it.first << " => " << it.second << '\n';
+    RSSFeed feed(it.first);
     feed.parse();
     vector<Article> articleVector = feed.getArticles();
     ThreadPool pool(kNumThreads);
@@ -129,9 +128,15 @@ static void processAllFeeds(const string &feedListURI)
           cout << oslock << "Parse article \"" <<  a.url << "\" ended." << endl
                << osunlock;
       });
-     });
+    });
     pool.wait();
+  });
+  #if 0
+  for (map<string, string>::iterator it = feedsmap.begin(); it != feedsmap.end(); ++it)
+  {
+    //cout << it->first << " => " << it->second << '\n';
   }
+  #endif
 }
 
 static const size_t kMaxMatchesToShow = 15;
