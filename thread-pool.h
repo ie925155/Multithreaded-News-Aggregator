@@ -12,6 +12,11 @@
 
 #include <cstddef>    // for size_t
 #include <functional> // for the function template used in the schedule signature
+#include <thread>
+#include <vector>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
 
 class ThreadPool
 {
@@ -37,6 +42,13 @@ public:
   void wait();
 
 private:
+  std::vector< std::thread > workers;
+  // the task queue
+  std::queue< std::function<void()> > tasks;
+  std::mutex m;
+  std::condition_variable task_condition;
+  bool stop;
+
   /**
  * ThreadPools are the type of thing that shouldn't be cloneable, since it's
  * not clear what it means to clone a ThreadPool (should copies of all outstanding
