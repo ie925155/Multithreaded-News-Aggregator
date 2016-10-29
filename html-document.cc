@@ -2,7 +2,7 @@
  * File: html-document.cc
  * ----------------------
  * Presents the implementation for the HTMLDocument class,
- * which relies on libxml2's ability to parse a single document 
+ * which relies on libxml2's ability to parse a single document
  * and extract the textual content from the body tag.
  */
 

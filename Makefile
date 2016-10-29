@@ -56,11 +56,14 @@ HEADERS = \
 	ostreamlock.h \
 
 OBJECTS = $(SOURCES:.cc=.o)
-TARGETS = news-aggregator thread-pool-test
+TARGETS = news-aggregator thread-pool-test html-test
 
 default: $(TARGETS)
 
 thread-pool-test: thread-pool-test.o thread-pool.o ostreamlock.o
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+
+html-test: html-test.o html-document.o stream-tokenizer.o
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 news-aggregator: news-aggregator.o rss-feed.o rss-feed-list.o rss-index.o html-document.o stream-tokenizer.o news-aggregator-utils.o \
