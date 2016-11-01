@@ -42,9 +42,9 @@ public:
   void wait();
 
 private:
-  std::vector< std::thread > workers;
+  std::vector<std::thread> workers;
   // the task queue
-  std::queue< std::function<void()> > tasks;
+  std::queue<std::function<void()>> tasks;
   std::mutex m;
   std::condition_variable task_condition;
   bool stop;

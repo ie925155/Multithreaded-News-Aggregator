@@ -108,9 +108,9 @@ static void processAllFeeds(const string &feedListURI)
   map<string, string> feedsmap = feedList.getFeeds();
   ThreadPool feed_pool(mNumThreads);
   //handle all feeds
-  for_each(feedsmap.begin(), feedsmap.end(), [&feed_pool](const pair<string, string>& it) {
+  for_each(feedsmap.begin(), feedsmap.end(), [&feed_pool](const pair<string, string> &it) {
     cout << it.first << " => " << it.second << '\n';
-    feed_pool.schedule([it]{
+    feed_pool.schedule([it] {
       RSSFeed feed(it.first);
       feed.parse();
       vector<Article> articleVector = feed.getArticles();
@@ -119,17 +119,17 @@ static void processAllFeeds(const string &feedListURI)
       for_each(articleVector.begin(), articleVector.end(), [&pool](Article a) {
         //cout << "url=" << a.url << endl;
         //cout << " title=" << a.title << endl;
-        pool.schedule([a]{
-            cout << oslock << "Parse article \"" <<  a.url << "\" has started." << endl
-                 << osunlock;
-            struct Article article = {a.url, a.title};
-            HTMLDocument document(a.url);
-            document.parse();
-            m.lock();
-            index.add(cref(article), cref(document.getTokens()));
-            m.unlock();
-            cout << oslock << "Parse article \"" <<  a.url << "\" ended." << endl
-                 << osunlock;
+        pool.schedule([a] {
+          cout << oslock << "Parse article \"" << a.url << "\" has started." << endl
+               << osunlock;
+          struct Article article = {a.url, a.title};
+          HTMLDocument document(a.url);
+          document.parse();
+          m.lock();
+          index.add(cref(article), cref(document.getTokens()));
+          m.unlock();
+          cout << oslock << "Parse article \"" << a.url << "\" ended." << endl
+               << osunlock;
         });
       });
       pool.wait();

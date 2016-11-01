@@ -11,7 +11,7 @@
 using namespace std;
 
 ThreadPool::ThreadPool(size_t numThreads)
-  :   stop(false)
+    : stop(false)
 {
     for (size_t i = 0; i < numThreads; ++i)
         workers.emplace_back([this] {
@@ -35,19 +35,21 @@ ThreadPool::ThreadPool(size_t numThreads)
 
 void ThreadPool::schedule(const function<void(void)> &thunk)
 {
-  cout<< oslock << __func__ << endl << osunlock;
-  unique_lock<mutex> lock(this->m);
-  tasks.emplace(thunk);
-  task_condition.notify_one();
+    cout << oslock << __func__ << endl
+         << osunlock;
+    unique_lock<mutex> lock(this->m);
+    tasks.emplace(thunk);
+    task_condition.notify_one();
 }
 
 void ThreadPool::wait()
 {
-  cout<< oslock << __func__ << endl << osunlock;
-  unique_lock<mutex> lock(this->m);
-  this->stop = true;
-  lock.unlock();
-  task_condition.notify_all();
-  for(auto &worker: workers)
-    worker.join();
+    cout << oslock << __func__ << endl
+         << osunlock;
+    unique_lock<mutex> lock(this->m);
+    this->stop = true;
+    lock.unlock();
+    task_condition.notify_all();
+    for (auto &worker : workers)
+        worker.join();
 }

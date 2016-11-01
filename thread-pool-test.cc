@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
       cout << oslock << "Thread (ID: " << id << ") has started." << endl
            << osunlock;
       size_t sleepTime = (id % 3) * 10;
-     this_thread::sleep_for(chrono::milliseconds(sleepTime));
+      this_thread::sleep_for(chrono::milliseconds(sleepTime));
       cout << oslock << "Thread (ID: " << id << ") has finished." << endl
            << osunlock;
     });

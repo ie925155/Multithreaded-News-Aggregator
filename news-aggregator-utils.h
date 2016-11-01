@@ -17,7 +17,7 @@
  * "https://graph.facebook.com/jerry"), return just the server portion of the
  * URL (e.g. "cs110.stanfod.edu", or "graph.facebook.com").
  */
-std::string getURLServer(const std::string& url);
+std::string getURLServer(const std::string &url);
 
 /**
  * Function: shouldTruncate
@@ -25,7 +25,7 @@ std::string getURLServer(const std::string& url);
  * Returns true if and only if the string is long enough to truncate when
  * publishing out to the console.
  */
-bool shouldTruncate(const std::string& str);
+bool shouldTruncate(const std::string &str);
 
 /**
  * Function: truncate
@@ -34,6 +34,6 @@ bool shouldTruncate(const std::string& str);
  * This function should only be called if the supplied string 
  * itself prompts shouldTruncate to return true.
  */
-std::string truncate(const std::string& str);
+std::string truncate(const std::string &str);
 
 #endif
