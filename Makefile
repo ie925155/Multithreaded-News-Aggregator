@@ -40,6 +40,7 @@ SOURCES = \
 	thread-pool.cc \
 	thread-pool-test.cc \
 	ostreamlock.cc \
+	semaphore.cc \
 
 HEADERS = \
 	article.h \
@@ -54,20 +55,21 @@ HEADERS = \
 	rss-index.h \
 	thread-pool.h \
 	ostreamlock.h \
+	semaphore.h \
 
 OBJECTS = $(SOURCES:.cc=.o)
 TARGETS = news-aggregator thread-pool-test html-test
 
 default: $(TARGETS)
 
-thread-pool-test: thread-pool-test.o thread-pool.o ostreamlock.o
+thread-pool-test: thread-pool-test.o thread-pool.o ostreamlock.o semaphore.o
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 html-test: html-test.o html-document.o stream-tokenizer.o
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 news-aggregator: news-aggregator.o rss-feed.o rss-feed-list.o rss-index.o html-document.o stream-tokenizer.o news-aggregator-utils.o \
-	thread-pool.o ostreamlock.o
+	thread-pool.o ostreamlock.o semaphore.o
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 # In make's default rules, a .o automatically depends on its .c file

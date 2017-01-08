@@ -16,7 +16,10 @@
 #include <vector>
 #include <queue>
 #include <mutex>
+#include <atomic>
 #include <condition_variable>
+
+#include "semaphore.h"
 
 class ThreadPool
 {
@@ -42,13 +45,25 @@ public:
   void wait();
 
 private:
-  std::vector<std::thread> workers;
+  typedef struct {
+    bool is_working;
+    bool is_active;
+    std::unique_ptr<semaphore> sem_wait_task;
+    std::function<void(void)> thunk;
+  } worker_t;
+  std::vector<worker_t> workers;
   // the task queue
-  std::queue<std::function<void()>> tasks;
+  std::queue<std::function<void(void)> > tasks;
+  std::unique_ptr<semaphore> sem_wait_task;
+  std::unique_ptr<semaphore> sem_worker_res;
+  std::unique_ptr<semaphore> sem_wait;
+  std::atomic_int num_of_task;
   std::mutex m;
+  std::mutex worker_mutex;
   std::condition_variable task_condition;
-  bool stop;
 
+  void do_task(worker_t &worker);
+  void dispatcher(void);
   /**
  * ThreadPools are the type of thing that shouldn't be cloneable, since it's
  * not clear what it means to clone a ThreadPool (should copies of all outstanding
