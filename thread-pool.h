@@ -29,7 +29,6 @@ public:
  * number of threads.
  */
   ThreadPool(size_t numThreads);
-  ~ThreadPool();
 
   /**
  * Schedules the provided thunk (which is something that can
@@ -61,9 +60,11 @@ private:
   std::atomic_int num_of_task;
   std::mutex m;
   std::mutex worker_mutex;
+  std::mutex task_mutex;
   std::condition_variable task_condition;
+  //size_t aaaaaa;
 
-  void do_task(worker_t &worker);
+  void do_task(const size_t i);
   void dispatcher(void);
   /**
  * ThreadPools are the type of thing that shouldn't be cloneable, since it's

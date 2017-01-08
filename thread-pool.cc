@@ -27,20 +27,6 @@ ThreadPool::ThreadPool(size_t numThreads)
   thread t([this]() -> void { this->dispatcher(); });
   t.detach();
 }
-ThreadPool::~ThreadPool()
-{
-  cout << oslock << "sheldon destructor called.." << endl << osunlock;
-  for (auto &worker : workers){
-    cout << oslock << "sheldon worker is_active " << worker.is_active << endl << osunlock;
-    if(worker.is_active)
-      worker.sem_wait_task->signal();
-  }
-  if(sem_wait_task == NULL){
-    cout << oslock << "sheldon sem_wait_task is null " << endl << osunlock;
-    return;
-  }
-  sem_wait_task->signal();
-}
 void ThreadPool::schedule(const function<void(void)> &thunk)
 {
   unique_lock<mutex> lock(this->m);
@@ -58,24 +44,21 @@ void ThreadPool::dispatcher(void)
 {
   while(true){
     sem_wait_task->wait();
-    cout << oslock << "sheldon num_of_task " << num_of_task << endl << osunlock;
-    if(num_of_task == 0){
-      cout << oslock << "sheldon breakkkkkkkkkkkkkkkkkkk" << endl << osunlock;
-      break;
-    }
     sem_worker_res->wait();
     worker_mutex.lock();
-    for (auto &worker : workers){
-      if(!worker.is_working){
-        worker.is_working = true;
-        //cout << oslock << "notify worker" << endl << osunlock;
-        worker.thunk = tasks.front();
+    size_t worker_len = workers.size();
+    size_t idx;
+    for (size_t i = 0; i < worker_len; i++) {
+      idx = i;
+      if(!workers[i].is_working){
+        workers[i].is_working = true; //cout << oslock << "notify worker" << endl << osunlock;
+        workers[i].thunk = tasks.front();
         tasks.pop();
-        worker.sem_wait_task->signal();
-        if(!worker.is_active){
+        workers[i].sem_wait_task->signal();
+        if(!workers[i].is_active){
           //cout << oslock << "new a active worker " <<  &worker << endl << osunlock;
-          worker.is_active = true;
-          thread t([this, &worker]() -> void { do_task(worker); });
+          workers[i].is_active = true;
+          thread t([this](size_t idx) -> void { do_task(idx); }, idx);
           t.detach();
         }
         break;
@@ -83,23 +66,21 @@ void ThreadPool::dispatcher(void)
     } // end of for loop
     worker_mutex.unlock();
   } // end of while loop
-  cout << oslock << "sheldon leave dispatcher while loop" << endl << osunlock;
 }
 
-void ThreadPool::do_task(worker_t &worker)
+void ThreadPool::do_task(const size_t index)
 {
   while(true){
-    worker.sem_wait_task->wait();
-    if(num_of_task == 0) break;
-    //cout << oslock << "worker " << &worker << endl << osunlock;
-    worker.thunk();
-    worker.is_working = false;
-    sem_worker_res->signal(); //cout << oslock << "avaliable worker " << &worker << endl << osunlock; num_of_task--; cout << oslock << "sheldon num_of_task " << num_of_task << endl << osunlock;
+    task_mutex.lock();
+    unique_ptr<semaphore>& sem_copy = workers[index].sem_wait_task;
+    task_mutex.unlock();
+    sem_copy->wait();
+    workers[index].thunk();
+    workers[index].is_working = false;
+    sem_worker_res->signal();
     num_of_task--;
     if(num_of_task == 0){
-      cout << oslock << "sheldon signal task done " << num_of_task << endl << osunlock;
       sem_wait->signal();
     }
-  };
-  cout << oslock << "sheldon leave do_task while loop" << endl << osunlock;
+  }
 }
