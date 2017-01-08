@@ -29,6 +29,7 @@ public:
  * number of threads.
  */
   ThreadPool(size_t numThreads);
+  ~ThreadPool();
 
   /**
  * Schedules the provided thunk (which is something that can

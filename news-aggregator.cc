@@ -111,6 +111,8 @@ static void processAllFeeds(const string &feedListURI)
   for_each(feedsmap.begin(), feedsmap.end(), [&feed_pool](const pair<string, string> &it) {
     cout << it.first << " => " << it.second << '\n';
     feed_pool.schedule([it] {
+      cout << oslock << "schedule feed started " << it.first << endl
+          << osunlock;
       RSSFeed feed(it.first);
       feed.parse();
       vector<Article> articleVector = feed.getArticles();
@@ -132,10 +134,18 @@ static void processAllFeeds(const string &feedListURI)
                << osunlock;
         });
       });
+      cout << oslock << "sheldon pool.wait" << endl
+               << osunlock;
       pool.wait();
+      cout << oslock << "sheldon pool.wait ended." << endl
+               << osunlock;
     }); // end of feed_pool lambda
   });
+  cout << oslock << "sheldon wait feed_pool" << endl
+       << osunlock;
   feed_pool.wait();
+  cout << oslock << "sheldon feed_pool.wait ended." << endl
+      << osunlock;
 }
 
 static const size_t kMaxMatchesToShow = 15;

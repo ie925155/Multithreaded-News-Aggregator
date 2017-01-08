@@ -27,11 +27,24 @@ ThreadPool::ThreadPool(size_t numThreads)
   thread t([this]() -> void { this->dispatcher(); });
   t.detach();
 }
-
+ThreadPool::~ThreadPool()
+{
+  cout << oslock << "sheldon destructor called.." << endl << osunlock;
+  for (auto &worker : workers){
+    cout << oslock << "sheldon worker is_active " << worker.is_active << endl << osunlock;
+    if(worker.is_active)
+      worker.sem_wait_task->signal();
+  }
+  if(sem_wait_task == NULL){
+    cout << oslock << "sheldon sem_wait_task is null " << endl << osunlock;
+    return;
+  }
+  sem_wait_task->signal();
+}
 void ThreadPool::schedule(const function<void(void)> &thunk)
 {
   unique_lock<mutex> lock(this->m);
-  tasks.push(thunk);
+  tasks.emplace(thunk);
   num_of_task++;
   sem_wait_task->signal();
 }
@@ -45,6 +58,11 @@ void ThreadPool::dispatcher(void)
 {
   while(true){
     sem_wait_task->wait();
+    cout << oslock << "sheldon num_of_task " << num_of_task << endl << osunlock;
+    if(num_of_task == 0){
+      cout << oslock << "sheldon breakkkkkkkkkkkkkkkkkkk" << endl << osunlock;
+      break;
+    }
     sem_worker_res->wait();
     worker_mutex.lock();
     for (auto &worker : workers){
@@ -65,18 +83,23 @@ void ThreadPool::dispatcher(void)
     } // end of for loop
     worker_mutex.unlock();
   } // end of while loop
+  cout << oslock << "sheldon leave dispatcher while loop" << endl << osunlock;
 }
 
 void ThreadPool::do_task(worker_t &worker)
 {
   while(true){
     worker.sem_wait_task->wait();
+    if(num_of_task == 0) break;
     //cout << oslock << "worker " << &worker << endl << osunlock;
     worker.thunk();
     worker.is_working = false;
-    sem_worker_res->signal();
-    //cout << oslock << "avaliable worker " << &worker << endl << osunlock;
+    sem_worker_res->signal(); //cout << oslock << "avaliable worker " << &worker << endl << osunlock; num_of_task--; cout << oslock << "sheldon num_of_task " << num_of_task << endl << osunlock;
     num_of_task--;
-    if(num_of_task == 0) sem_wait->signal();
+    if(num_of_task == 0){
+      cout << oslock << "sheldon signal task done " << num_of_task << endl << osunlock;
+      sem_wait->signal();
+    }
   };
+  cout << oslock << "sheldon leave do_task while loop" << endl << osunlock;
 }
