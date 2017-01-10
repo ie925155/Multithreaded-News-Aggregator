@@ -126,12 +126,17 @@ static void processAllFeeds(const string &feedListURI)
                << osunlock;
           struct Article article = {a.url, a.title};
           HTMLDocument document(a.url);
-          document.parse();
-          m.lock();
-          index.add(cref(article), cref(document.getTokens()));
-          m.unlock();
-          cout << oslock << "Parse article \"" << a.url << "\" ended." << endl
-               << osunlock;
+          try {
+            document.parse();
+            m.lock();
+            index.add(cref(article), cref(document.getTokens()));
+            m.unlock();
+            cout << oslock << "Parse article \"" << a.url << "\" ended." << endl
+                << osunlock;
+          } catch(RSSFeedException exception){
+              cout << oslock << "RSSFeedException error" << endl
+                   << osunlock;
+          }
         });
       });
       cout << oslock << "sheldon pool.wait" << endl
